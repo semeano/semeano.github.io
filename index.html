@@ -1,1 +1,214 @@
-Hello World
+<html>
+<head>
+    <title>lamp</title>
+    <link href="http://fonts.googleapis.com/css?family=Roboto+Condensed:300italic,300" rel="stylesheet" type="text/css">
+    <style type="text/css" media="screen">
+
+        html, body {
+            background: #1a1a1a;
+            font-family: 'Play', sans-serif;
+            margin: 0;
+            font-size: 100%;
+        }
+        
+        img {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            margin-top: -200px;
+            margin-left: -400px;
+            width: 400px;
+            height: 400px;
+            z-index: 1;
+        }
+        
+        a {
+            color: #000;
+            font-weight: bold;
+            text-decoration: none;
+        }
+        
+        .cord {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            margin-top: -70px;
+            margin-left: -152px;
+            width: 40px;
+            height: 95px;
+            cursor: move;
+            z-index: 3;
+        }
+        
+        #light {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            margin-top: -110px;
+            margin-left: -280px;
+            width: 700px;
+            height: 272px;
+            z-index: 2;
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+        
+        #text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            margin-top: 20px;
+            margin-left: -100px;
+            width: 280px;
+            opacity: 0;
+            transition: opacity 0.5s;
+            z-index: 4;
+            font-family: 'Open Sans', sans-serif;
+            font-size: 1em;
+        }
+
+        .stats {
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            display: none;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div id="container"></div>
+    
+    <img src="svg/lamp.svg" />
+    
+    <div class="cord" onclick="lights()"></div>
+    
+    <canvas id="light"></canvas>
+    
+    <div id="text">
+        <p>Cord demo available <a href="https://github.com/semeano/Coffee-Physics/blob/master/compiled/demos/CordDemo.js">here</a>.</p>
+        <p>Made with <a href="https://github.com/soulwire/Coffee-Physics">Coffee-Physics</a>.</p>
+        <p>Lamp design by <a href="http://thenounproject.com/hashbash123/">Hash Basheer</a>.</p>
+    </div>
+
+    <!-- Libraries -->
+    <script src="core/jquery/1.7.1/jquery.min.js"></script>
+    <script src="core/stats/Stats.js"></script>
+    <!-- Core -->
+    <script src="core/base.js"></script>
+    <script src="core/math/Random.js"></script>
+    <script src="core/math/Vector.js"></script>
+    <!-- Integrators -->
+    <script src="core/engine/integrator/Integrator.js"></script>
+    <script src="core/engine/integrator/Euler.js"></script>
+    <script src="core/engine/integrator/ImprovedEuler.js"></script>
+    <script src="core/engine/integrator/Verlet.js"></script>
+    <!-- Engine -->
+    <script src="core/engine/Particle.js"></script>
+    <script src="core/engine/Physics.js"></script>
+    <script src="core/engine/Spring.js"></script>
+    <!-- Behaviours -->
+    <script src="core/behaviour/Behaviour.js"></script>
+    <script src="core/behaviour/Attraction.js"></script>
+    <script src="core/behaviour/Collision.js"></script>
+    <script src="core/behaviour/ConstantForce.js"></script>
+    <script src="core/behaviour/EdgeBounce.js"></script>
+    <script src="core/behaviour/EdgeWrap.js"></script>
+    <script src="core/behaviour/Wander.js"></script>
+    <!-- Demo Renderers -->
+    <script src="core/demos/renderer/Renderer.js"></script>
+    <script src="core/demos/renderer/CanvasRenderer.js"></script>
+    <script src="core/demos/renderer/WebGLRenderer.js"></script>
+    <script src="core/demos/renderer/DOMRenderer.js"></script>
+    <!-- Demos -->
+    <script src="core/demos/Demo.js"></script>
+    <script src="core/demos/CordDemo.js"></script>
+    <script>
+        
+        var light = false;
+
+        (function() {
+
+            var demo;
+            var stats;
+            var renderer;
+            var container;
+            var $renderer;
+
+            // Initialises the testbed and starts the default demo.
+            function init() {
+
+                stats = new Stats();
+                renderer = 'WebGLRenderer';
+                container = $('#container');
+                $renderer = $('#renderer-select a');
+
+                // Append stats.
+                stats.domElement.className = 'stats';
+                document.body.appendChild(stats.domElement);
+
+                // Set default demo and start updating.
+                setDemo();
+                update();
+            }
+
+            // Updates current demo.
+            function update() {
+
+                requestAnimationFrame(update);
+                demo.step();
+                stats.update();
+            }
+
+            // Sets the current demo.
+            function setDemo() {
+
+                // Initialise new demo.
+                demo = new CordDemo();
+                demo.init(container.get(0), new self[ renderer ]());
+
+                // Provide access from console for debugging.
+                self.__demo = demo;
+            }
+
+            init();
+            
+            // Draw light
+            var canvas = document.getElementById('light');
+            if (canvas.getContext) {
+                var ctx = canvas.getContext('2d');
+                ctx.beginPath();
+                ctx.moveTo(96, 22);
+                ctx.lineTo(290, 150);
+                ctx.lineTo(0, 150);
+                ctx.lineTo(64, 33);
+                ctx.fillStyle = "rgba(255,255,255,0.6)";
+                ctx.fill();
+            }
+
+        })();
+        
+        function lights() {
+            
+            light = !light;
+            var canvas = document.getElementById('light');
+            var text = document.getElementById('text');
+
+            if (light) {
+                var audio = new Audio('mp3/on.mp3');
+                audio.play();
+                canvas.style.opacity = '1';
+                text.style.opacity = '1';
+            }
+            else {
+                var audio = new Audio('mp3/off.mp3');
+                audio.play();
+                canvas.style.opacity = '0';
+                text.style.opacity = '0';
+            }
+        }
+        
+    </script>
+</body>
+</html>
