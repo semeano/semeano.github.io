@@ -1,7 +1,0 @@
-source "https://rubygems.org"
-source "http://gems.hashicorp.com"
-gem "vagrant", "= 1.6.3"
-group :plugins do
-gem "vagrant-login", nil, {}
-gem "vagrant-share", nil, {}
-end
